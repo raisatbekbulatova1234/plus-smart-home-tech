@@ -21,7 +21,7 @@ public class CollectorController {
     private final CollectorService collectorService;
 
     @PostMapping("/sensors")
-    public void prpcessSensorEvent(@Valid @RequestBody SensorEvent event) {
+    public void processSensorEvent(@Valid @RequestBody SensorEvent event) {
         collectorService.processSensorEvent(event);
     }
 

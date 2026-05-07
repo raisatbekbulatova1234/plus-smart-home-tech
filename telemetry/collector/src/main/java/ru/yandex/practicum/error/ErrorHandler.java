@@ -36,7 +36,7 @@ public class ErrorHandler {
 
     @ExceptionHandler(KafkaConfigurationException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiError handleKfkaConfigurationException(KafkaConfigurationException ex) {
+    public ApiError handleKafkaConfigurationException(KafkaConfigurationException ex) {
         String errorMessage = "Внутренние ошибки в работе сервиса.";
 
         log.warn("Ошибка в параметрах настройки kafka: {} - {}",
