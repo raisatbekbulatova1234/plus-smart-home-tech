@@ -39,30 +39,30 @@
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
 
-            <plugin>
-                <groupId>io.github.ascopes</groupId>
-                <artifactId>protobuf-maven-plugin</artifactId>
+<!--            <plugin>-->
+<!--                <groupId>io.github.ascopes</groupId>-->
+<!--                <artifactId>protobuf-maven-plugin</artifactId>-->
 
-                <configuration>
-                    <protocVersion>${protobuf.version}</protocVersion>
+<!--                <configuration>-->
+<!--                    <protocVersion>${protobuf.version}</protocVersion>-->
 
-                    <binaryMavenPlugins>
-                        <binaryMavenPlugin>
-                            <groupId>io.grpc</groupId>
-                            <artifactId>protoc-gen-grpc-java</artifactId>
-                            <version>${grpc.version}</version>
-                        </binaryMavenPlugin>
-                    </binaryMavenPlugins>
-                </configuration>
+<!--                    <binaryMavenPlugins>-->
+<!--                        <binaryMavenPlugin>-->
+<!--                            <groupId>io.grpc</groupId>-->
+<!--                            <artifactId>protoc-gen-grpc-java</artifactId>-->
+<!--                            <version>${grpc.version}</version>-->
+<!--                        </binaryMavenPlugin>-->
+<!--                    </binaryMavenPlugins>-->
+<!--                </configuration>-->
 
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            <goal>generate</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
 
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
