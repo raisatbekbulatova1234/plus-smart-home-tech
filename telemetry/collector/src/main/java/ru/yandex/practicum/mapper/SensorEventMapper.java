@@ -1,18 +1,18 @@
 package ru.yandex.practicum.mapper;
 
 import org.mapstruct.Mapper;
-import ru.yandex.practicum.dto.sensors.*;
+import ru.yandex.practicum.grpc.telemetry.event.*;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 
 @Mapper(componentModel = "spring")
 public interface SensorEventMapper {
-    ClimateSensorAvro toClimateSensorEventAvro(ClimateSensorEvent event);
+    ClimateSensorAvro toClimateSensorEventAvroFromProto(ClimateSensorProto event);
 
-    LightSensorAvro toLightSensorEventAvro(LightSensorEvent event);
+    LightSensorAvro toLightSensorEventAvroFromProto(LightSensorProto event);
 
-    MotionSensorAvro toMotionSensorEventAvro(MotionSensorEvent event);
+    MotionSensorAvro toMotionSensorEventAvroFromProto(MotionSensorProto event);
 
-    SwitchSensorAvro toSwitchSensorEventAvro(SwitchSensorEvent event);
+    SwitchSensorAvro toSwitchSensorEventAvroFromProto(SwitchSensorProto event);
 
-    TemperatureSensorAvro toTemperatureSensorEventAvro(TemperatureSensorEvent event);
+    TemperatureSensorAvro toTemperatureSensorEventAvroFromProto(TemperatureSensorProto event);
 }
