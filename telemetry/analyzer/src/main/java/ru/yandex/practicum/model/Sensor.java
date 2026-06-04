@@ -1,0 +1,19 @@
+package ru.yandex.practicum.model;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+/**
+ * Сущность "Датчик" для базы данных.
+ */
+@Entity
+@Table(name = "sensors")
+@Getter
+@Setter
+public class Sensor {
+    @Id
+    private String id;
+
+    @Column(name = "hub_id")
+    private String hubId;
+}
