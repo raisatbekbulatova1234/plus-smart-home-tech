@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class KafkaConfig {
+public class AggregatorKafkaConfig {
     @Bean
-    public KafkaConsumer<String, SensorEventAvro> kafkaConsumer(KafkaProperties props) {
+    public KafkaConsumer<String, SensorEventAvro> kafkaConsumer(AggregatorKafkaProperties props) {
 
         Map<String, Object> config = new HashMap<>(props.getConsumer().getProperties());
 
@@ -21,7 +21,7 @@ public class KafkaConfig {
     }
 
     @Bean
-    public KafkaProducer<String, SensorsSnapshotAvro> kafkaProducer(KafkaProperties props) {
+    public KafkaProducer<String, SensorsSnapshotAvro> kafkaProducer(AggregatorKafkaProperties props) {
 
         Map<String, Object> config = new HashMap<>(props.getProducer().getProperties());
 
