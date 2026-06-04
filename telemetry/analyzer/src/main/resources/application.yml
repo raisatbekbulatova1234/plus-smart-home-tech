@@ -4,8 +4,8 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:5432/analyzer
-    username: main
-    password: main
+    username: admin
+    password: admin
     driver-class-name: org.postgresql.Driver
 
   jpa:
