@@ -9,6 +9,15 @@ import org.apache.kafka.common.serialization.Deserializer;
 
 import java.io.IOException;
 
+/**
+ * Базовый десериализатор Avro сообщений для Kafka
+ *
+ * @param <T> тип Avro объекта, который будет десериализован (должен наследовать SpecificRecordBase)
+ *
+ * Этот класс реализует паттерн "Шаблонный метод" для десериализации всех Avro объектов.
+ * Конкретные десериализаторы (HubEventDeserializer, SensorsSnapshotDeserializer)
+ * будут наследовать этот класс и передавать свою схему.
+ */
 public class BaseAvroDeserializer<T extends SpecificRecordBase> implements Deserializer<T> {
     private final DecoderFactory decoderFactory;
     private final SpecificDatumReader<T> reader;
