@@ -11,7 +11,7 @@ import java.util.Map;
 @Getter
 @Setter
 @ConfigurationProperties("aggregator.kafka")
-public class KafkaProperties {
+public class AggregatorKafkaProperties {
     private ProducerConfiguration producer = new ProducerConfiguration();
     private ConsumerConfiguration consumer = new ConsumerConfiguration();
 
