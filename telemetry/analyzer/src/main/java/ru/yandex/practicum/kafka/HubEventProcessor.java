@@ -58,7 +58,11 @@ public class HubEventProcessor implements Runnable {
     }
 
     private void start() {
-        Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
+        // Добавляем хук для корректного завершения
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            log.info("Получен сигнал завершения");
+            consumer.wakeup();
+        }));
 
         try {
             consumer.subscribe(List.of(properties.getHubEventConfiguration().getTopic()));
@@ -66,34 +70,55 @@ public class HubEventProcessor implements Runnable {
             while (true) {
                 ConsumerRecords<String, HubEventAvro> records = consumer.poll(pollTimeout);
 
-                if (records.isEmpty()) {
-                    continue;
-                }
-
-                try {
-                    for (ConsumerRecord<String, HubEventAvro> record : records) {
-                        processRecord(record);
-                    }
-
-                    consumer.commitSync();
-
-                } catch (Exception ex) {
-                    log.error("Ошибка обработки Kafka batch. recordsCount={}", records.count(), ex);
+                if (!records.isEmpty()) {
+                    processBatch(records);
                 }
             }
 
-        } catch (WakeupException ignored) {
-        } catch (Exception ex) {
-            log.error("Критическая ошибка Kafka consumer loop: topic={}",
-                    properties.getHubEventConfiguration().getTopic(), ex);
+        } catch (WakeupException e) {
+            log.info("Consumer остановлен корректно");
+        } catch (Exception e) {
+            log.error("Критическая ошибка в consumer loop", e);
         } finally {
+            closeConsumer();
+        }
+    }
 
-            try {
-                consumer.commitSync();
-            } finally {
-                log.info("Закрываем консьюмер");
-                consumer.close();
+    private void processBatch(ConsumerRecords<String, HubEventAvro> records) {
+        try {
+            // Обрабатываем все записи
+            for (ConsumerRecord<String, HubEventAvro> record : records) {
+                processRecord(record);
             }
+
+            // Асинхронный коммит (быстрее)
+            consumer.commitAsync((offsets, exception) -> {
+                if (exception != null) {
+                    log.error("Ошибка асинхронного коммита offset", exception);
+                }
+            });
+
+        } catch (Exception e) {
+            log.error("Ошибка обработки батча размером {}", records.count(), e);
+            // При ошибке не коммитим - записи обработаются при следующем poll
+        }
+    }
+
+    private void closeConsumer() {
+        log.info("Закрываем consumer");
+
+        // Финальный синхронный коммит
+        try {
+            consumer.commitSync();
+        } catch (Exception e) {
+            log.error("Ошибка при финальном коммите", e);
+        }
+
+        // Закрываем consumer
+        try {
+            consumer.close();
+        } catch (Exception e) {
+            log.error("Ошибка при закрытии consumer", e);
         }
     }
     /**

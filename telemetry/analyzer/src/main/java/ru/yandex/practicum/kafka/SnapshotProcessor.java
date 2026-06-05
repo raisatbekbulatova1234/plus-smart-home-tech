@@ -73,39 +73,36 @@ public class SnapshotProcessor implements Runnable {
      * 6. При завершении - финальный коммит и закрытие консьюмера
      */
     private void start() {
-        // Регистрируем хук для graceful shutdown: при завершении JVM вызывает wakeup()
+        // Регистрируем хук
         Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
 
         try {
-
             consumer.subscribe(topics);
 
-
             while (true) {
-                // Читаем сообщения с таймаутом
                 ConsumerRecords<String, SensorsSnapshotAvro> records = consumer.poll(pollTimeout);
-
-
-                int processedCount = 0;
-
 
                 if (records.isEmpty()) {
                     continue;
                 }
 
                 try {
-                    // Обрабатываем каждое сообщение в пакете
+                    // Обрабатываем все сообщения в пакете
                     for (ConsumerRecord<String, SensorsSnapshotAvro> record : records) {
-                        // Делегируем обработку снапшота сервису
                         snapshotService.handleSnapshot(record.value());
-                        processedCount++;
-
-                        // Обновляем смещения и коммитим при достижении batchSize
-                        manageOffsets(record, processedCount);
                     }
 
-                    // Асинхронный коммит оставшихся смещений после обработки всего пакета
-                    consumer.commitAsync();
+                    // Один раз обновляем оффсеты после успешной обработки ВСЕЙ пачки
+                    updateOffsets(records);
+
+                    // Асинхронный коммит с обработкой ошибок
+                    consumer.commitAsync((offsets, exception) -> {
+                        if (exception != null) {
+                            log.error("Ошибка асинхронного коммита оффсетов", exception);
+                        } else {
+                            log.debug("Успешно закоммичены оффсеты: {}", offsets);
+                        }
+                    });
 
                 } catch (Exception ex) {
                     log.error("Ошибка обработки Kafka batch. recordsCount={}", records.count(), ex);
@@ -114,19 +111,36 @@ public class SnapshotProcessor implements Runnable {
             }
 
         } catch (WakeupException ignored) {
-
+            log.info("Consumer остановлен по сигналу");
         } catch (Exception ex) {
-            log.error("Критическая ошибка Kafka consumer loop: topic={}",
-                    topics, ex);
+            log.error("Критическая ошибка Kafka consumer loop: topic={}", topics, ex);
         } finally {
+
+            log.info("Закрываем консьюмер");
 
             try {
                 // Финальный синхронный коммит всех накопленных смещений
-                consumer.commitSync(currentOffsets);
-            } finally {
-                log.info("Закрываем консьюмер.");
-                consumer.close();
+                if (!currentOffsets.isEmpty()) {
+                    consumer.commitSync(currentOffsets);
+                }
+            } catch (Exception e) {
+                log.error("Ошибка при финальном коммите", e);
             }
+
+            try {
+                consumer.close();
+            } catch (Exception e) {
+                log.error("Ошибка при закрытии consumer", e);
+            }
+        }
+    }
+
+    private void updateOffsets(ConsumerRecords<String, SensorsSnapshotAvro> records) {
+        for (ConsumerRecord<String, SensorsSnapshotAvro> record : records) {
+            currentOffsets.put(
+                    new TopicPartition(record.topic(), record.partition()),
+                    new OffsetAndMetadata(record.offset() + 1, "snapshot-processed")
+            );
         }
     }
 

@@ -62,40 +62,61 @@ public class AggregationStarter implements ApplicationRunner {
 
             while (true) {
                 ConsumerRecords<String, SensorEventAvro> records = consumer.poll(pollTimeout);
-                int processedCount = 0;
 
                 if (records.isEmpty()) {
                     continue;
                 }
 
-                try {
-                    for (ConsumerRecord<String, SensorEventAvro> record : records) {
-                        handleRecord(record, producer);
-                        processedCount++;
-                        manageOffsets(record, processedCount);
-                    }
-
-                    consumer.commitAsync();
-
-                } catch (Exception ex) {
-                    log.error("Ошибка обработки Kafka batch. recordsCount={}", records.count(), ex);
-                }
+                // Обработка пачки
+                processBatch(records);
             }
-
-        } catch (WakeupException ignored) {
-        } catch (Exception ex) {
-            log.error("Критическая ошибка Kafka consumer loop: topic={}",
-                    properties.getConsumer().getSensorTopic(), ex);
+        } catch (WakeupException e) {
+            log.info("Корректное завершение consumer");
+        } catch (Exception e) {
+            log.error("Критическая ошибка", e);
         } finally {
+            closeResources();
+        }
+    }
 
+    private void processBatch(ConsumerRecords<String, SensorEventAvro> records) {
+        try {
+            // Обрабатываем все записи
+            records.forEach(record -> handleRecord(record, producer));
+
+            // Обновляем оффсеты
+            updateOffsets(records);
+
+            // Коммитим
+            consumer.commitAsync();
+
+        } catch (Exception e) {
+            log.error("Ошибка обработки батча размером {}", records.count(), e);
+            // При ошибке не коммитим - записи обработаются при следующем poll()
+        }
+    }
+
+    private void closeResources() {
+        log.info("Закрытие ресурсов Kafka");
+
+
+        if (producer != null) {
             try {
                 producer.flush();
-                consumer.commitSync(currentOffsets);
-            } finally {
-                log.info("Закрываем консьюмер");
-                consumer.close();
-                log.info("Закрываем продюсер");
                 producer.close();
+            } catch (Exception e) {
+                log.error("Ошибка закрытия producer", e);
+            }
+        }
+
+        if (consumer != null) {
+            try {
+                if (!currentOffsets.isEmpty()) {
+                    consumer.commitSync(currentOffsets);
+                }
+                consumer.close();
+            } catch (Exception e) {
+                log.error("Ошибка закрытия consumer", e);
             }
         }
     }
