@@ -2,83 +2,113 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!-- ========================================== -->
+    <!-- БЛОК 1: РОДИТЕЛЬСКИЙ POM (SPRING BOOT) -->
+    <!-- ========================================== -->
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.3.2</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/> <!-- Поиск родителя в Maven-репозитории (не в файловой системе) -->
     </parent>
 
+    <!-- ========================================== -->
+    <!-- БЛОК 2: ИДЕНТИФИКАТОР ПРОЕКТА -->
+    <!-- ========================================== -->
     <groupId>ru.yandex.practicum</groupId>
     <artifactId>smart-home-tech</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
+    <packaging>pom</packaging> <!-- POM-упаковка (агрегатор модулей, не JAR) -->
 
+    <!-- ========================================== -->
+    <!-- БЛОК 3: СПИСОК МОДУЛЕЙ (СБОРКА) -->
+    <!-- ========================================== -->
     <modules>
-        <module>telemetry</module>
-        <module>infra</module>
-        <module>commerce</module>
+        <module>telemetry</module>              <!-- Телеметрия (основной модуль) -->
+        <module>infra</module>                  <!-- Инфраструктура -->
+        <module>commerce</module>               <!-- Коммерция/Магазин -->
     </modules>
 
+    <!-- ========================================== -->
+    <!-- БЛОК 4: СВОЙСТВА (ВЕРСИИ БИБЛИОТЕК) -->
+    <!-- ========================================== -->
     <properties>
+        <!-- Java -->
         <java.version>21</java.version>
 
-        <avro.version>1.11.3</avro.version>
-        <kafka-clients.version>3.6.1</kafka-clients.version>
-        <springdoc-openapi-starter.version>2.6.0</springdoc-openapi-starter.version>
-        <grpc-spring-boot-starter.version>3.1.0.RELEASE</grpc-spring-boot-starter.version>
-        <protobuf.version>3.23.4</protobuf.version>
-        <grpc.version>1.63.0</grpc.version>
+        <!-- Схемы и сообщения -->
+        <avro.version>1.11.3</avro.version>              <!-- Avro сериализация -->
+        <protobuf.version>3.23.4</protobuf.version>      <!-- Protobuf сообщения -->
+        <grpc.version>1.63.0</grpc.version>              <!-- gRPC -->
 
-        <!--       Plugins       -->
+        <!-- Клиенты -->
+        <kafka-clients.version>3.6.1</kafka-clients.version>
+
+        <!-- Spring интеграции -->
+        <grpc-spring-boot-starter.version>3.1.0.RELEASE</grpc-spring-boot-starter.version>
+        <springdoc-openapi-starter.version>2.6.0</springdoc-openapi-starter.version> <!-- OpenAPI/Swagger -->
+
+        <!-- Обработка аннотаций -->
+        <mapstruct.version>1.5.5.Final</mapstruct.version>   <!-- MapStruct маппинг -->
+        <lombok.version>1.18.34</lombok.version>             <!-- Lombok -->
+
+        <!-- Плагины Maven -->
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <avro-maven-plugin.version>${avro.version}</avro-maven-plugin.version>
         <protobuf-plugin.version>2.4.0</protobuf-plugin.version>
-        <mapstruct.version>1.5.5.Final</mapstruct.version>
-        <lombok.version>1.18.34</lombok.version>
-
     </properties>
 
+    <!-- ========================================== -->
+    <!-- БЛОК 5: УПРАВЛЕНИЕ ЗАВИСИМОСТЯМИ (BOM) -->
+    <!-- ========================================== -->
     <dependencyManagement>
         <dependencies>
+            <!-- Avro -->
             <dependency>
                 <groupId>org.apache.avro</groupId>
                 <artifactId>avro</artifactId>
                 <version>${avro.version}</version>
             </dependency>
 
+            <!-- Kafka -->
             <dependency>
                 <groupId>org.apache.kafka</groupId>
                 <artifactId>kafka-clients</artifactId>
                 <version>${kafka-clients.version}</version>
             </dependency>
 
+            <!-- OpenAPI/Swagger UI -->
             <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
                 <version>${springdoc-openapi-starter.version}</version>
             </dependency>
 
-            <!--    GRPC dependencies management        -->
+            <!-- gRPC Starter для Spring Boot -->
             <dependency>
                 <groupId>net.devh</groupId>
                 <artifactId>grpc-spring-boot-starter</artifactId>
                 <version>${grpc-spring-boot-starter.version}</version>
             </dependency>
 
+            <!-- gRPC Server Starter -->
             <dependency>
                 <groupId>net.devh</groupId>
                 <artifactId>grpc-server-spring-boot-starter</artifactId>
                 <version>${grpc-spring-boot-starter.version}</version>
             </dependency>
 
+            <!-- gRPC Stub (клиентская заглушка) -->
             <dependency>
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-stub</artifactId>
                 <version>${grpc.version}</version>
             </dependency>
 
+            <!-- gRPC Protobuf поддержка -->
             <dependency>
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-protobuf</artifactId>
@@ -90,8 +120,9 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
-                <optional>true</optional>
+                <optional>true</optional> <!-- Не транзитивная зависимость -->
             </dependency>
+
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok-mapstruct-binding</artifactId>
@@ -104,19 +135,22 @@
                 <artifactId>mapstruct</artifactId>
                 <version>${mapstruct.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct-processor</artifactId>
                 <version>${mapstruct.version}</version>
             </dependency>
-
-            <!--    / GRPC dependencies management        -->
         </dependencies>
     </dependencyManagement>
 
+    <!-- ========================================== -->
+    <!-- БЛОК 6: УПРАВЛЕНИЕ ПЛАГИНАМИ -->
+    <!-- ========================================== -->
     <build>
         <pluginManagement>
             <plugins>
+                <!-- Компилятор Java с поддержкой MapStruct + Lombok -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -141,11 +175,15 @@
                         </annotationProcessorPaths>
                     </configuration>
                 </plugin>
+
+                <!-- Генерация классов из Avro-схем -->
                 <plugin>
                     <groupId>org.apache.avro</groupId>
                     <artifactId>avro-maven-plugin</artifactId>
                     <version>${avro-maven-plugin.version}</version>
                 </plugin>
+
+                <!-- Генерация классов из Protobuf -->
                 <plugin>
                     <groupId>io.github.ascopes</groupId>
                     <artifactId>protobuf-maven-plugin</artifactId>
@@ -154,4 +192,5 @@
             </plugins>
         </pluginManagement>
     </build>
+
 </project>
