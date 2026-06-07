@@ -13,6 +13,9 @@
     <packaging>pom</packaging>
     <modules>
         <module>shopping-store</module>
+        <module>shopping-cart</module>
+        <module>warehouse</module>
+        <module>interaction-api</module>
     </modules>
 
 </project>
