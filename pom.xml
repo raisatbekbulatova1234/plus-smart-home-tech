@@ -30,7 +30,9 @@
         <module>telemetry</module>              <!-- Телеметрия (основной модуль) -->
         <module>infra</module>                  <!-- Инфраструктура -->
         <module>commerce</module>
-        <module>commerce/interaction-api</module>               <!-- Коммерция/Магазин -->
+        <module>commerce/interaction-api</module>
+        <module>commerce/shopping-cart</module>
+        <module>commerce/warehouse</module>               <!-- Коммерция/Магазин -->
 
 
     </modules>

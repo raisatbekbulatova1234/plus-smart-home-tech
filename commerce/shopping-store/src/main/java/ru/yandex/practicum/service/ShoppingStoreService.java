@@ -16,35 +16,18 @@ import java.util.UUID;
  */
 public interface ShoppingStoreService {
 
-    /**
-     * Получение списка товаров по категории с пагинацией
-     */
     Page<ProductDto> getProductsByCategory(ProductCategory category, Pageable pageable);
 
-    /**
-     * Добавление нового товара в магазин
-     */
     ProductDto addProduct(NewProductDto newProduct);
 
-    /**
-     * Обновление существующего товара
-     * Поддерживает частичное обновление (только переданные поля)
-     */
+    //Обновление существующего товара. Поддерживает частичное обновление (только переданные поля)
+
     ProductDto updateProduct(UpdatedProductDto updatedProduct);
 
-    /**
-     * Деактивация товара (мягкое удаление)
-     * Товар не удаляется из БД, а меняет статус на DEACTIVATED
-     */
     boolean deactivateProduct(UUID productId);
 
-    /**
-     * Изменение состояния количества товара
-     */
+    //Изменение состояния количества товара
     boolean setProductQuantityState(SetProductQuantityState quantityState);
 
-    /**
-     * Получение товара по ID
-     */
     ProductDto getProductById(UUID productId);
 }
