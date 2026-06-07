@@ -29,7 +29,10 @@
     <modules>
         <module>telemetry</module>              <!-- Телеметрия (основной модуль) -->
         <module>infra</module>                  <!-- Инфраструктура -->
-        <module>commerce</module>               <!-- Коммерция/Магазин -->
+        <module>commerce</module>
+        <module>commerce/interaction-api</module>               <!-- Коммерция/Магазин -->
+
+
     </modules>
 
     <!-- ========================================== -->
@@ -55,6 +58,9 @@
         <mapstruct.version>1.5.5.Final</mapstruct.version>   <!-- MapStruct маппинг -->
         <lombok.version>1.18.34</lombok.version>             <!-- Lombok -->
 
+        <spring-cloud.version>2023.0.3</spring-cloud.version> <!-- Spring Cloud Config -->
+
+
         <!-- Плагины Maven -->
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <avro-maven-plugin.version>${avro.version}</avro-maven-plugin.version>
@@ -65,85 +71,93 @@
     <!-- БЛОК 5: УПРАВЛЕНИЕ ЗАВИСИМОСТЯМИ (BOM) -->
     <!-- ========================================== -->
     <dependencyManagement>
-        <dependencies>
-            <!-- Avro -->
-            <dependency>
-                <groupId>org.apache.avro</groupId>
-                <artifactId>avro</artifactId>
-                <version>${avro.version}</version>
-            </dependency>
+    <dependencies>
+    <!-- Avro -->
+    <dependency>
+        <groupId>org.apache.avro</groupId>
+        <artifactId>avro</artifactId>
+        <version>${avro.version}</version>
+    </dependency>
 
-            <!-- Kafka -->
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka-clients</artifactId>
-                <version>${kafka-clients.version}</version>
-            </dependency>
+    <!-- Kafka -->
+    <dependency>
+        <groupId>org.apache.kafka</groupId>
+        <artifactId>kafka-clients</artifactId>
+        <version>${kafka-clients.version}</version>
+    </dependency>
 
-            <!-- OpenAPI/Swagger UI -->
-            <dependency>
-                <groupId>org.springdoc</groupId>
-                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-                <version>${springdoc-openapi-starter.version}</version>
-            </dependency>
+    <!-- OpenAPI/Swagger UI -->
+    <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        <version>${springdoc-openapi-starter.version}</version>
+    </dependency>
 
-            <!-- gRPC Starter для Spring Boot -->
-            <dependency>
-                <groupId>net.devh</groupId>
-                <artifactId>grpc-spring-boot-starter</artifactId>
-                <version>${grpc-spring-boot-starter.version}</version>
-            </dependency>
+    <!-- gRPC Starter для Spring Boot -->
+    <dependency>
+        <groupId>net.devh</groupId>
+        <artifactId>grpc-spring-boot-starter</artifactId>
+        <version>${grpc-spring-boot-starter.version}</version>
+    </dependency>
 
-            <!-- gRPC Server Starter -->
-            <dependency>
-                <groupId>net.devh</groupId>
-                <artifactId>grpc-server-spring-boot-starter</artifactId>
-                <version>${grpc-spring-boot-starter.version}</version>
-            </dependency>
+    <!-- gRPC Server Starter -->
+    <dependency>
+        <groupId>net.devh</groupId>
+        <artifactId>grpc-server-spring-boot-starter</artifactId>
+        <version>${grpc-spring-boot-starter.version}</version>
+    </dependency>
 
-            <!-- gRPC Stub (клиентская заглушка) -->
-            <dependency>
-                <groupId>io.grpc</groupId>
-                <artifactId>grpc-stub</artifactId>
-                <version>${grpc.version}</version>
-            </dependency>
+    <!-- gRPC Stub (клиентская заглушка) -->
+    <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-stub</artifactId>
+        <version>${grpc.version}</version>
+    </dependency>
 
-            <!-- gRPC Protobuf поддержка -->
-            <dependency>
-                <groupId>io.grpc</groupId>
-                <artifactId>grpc-protobuf</artifactId>
-                <version>${grpc.version}</version>
-            </dependency>
+    <!-- gRPC Protobuf поддержка -->
+    <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-protobuf</artifactId>
+        <version>${grpc.version}</version>
+    </dependency>
 
-            <!-- Lombok -->
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${lombok.version}</version>
-                <optional>true</optional> <!-- Не транзитивная зависимость -->
-            </dependency>
+    <!-- Lombok -->
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>${lombok.version}</version>
+        <optional>true</optional> <!-- Не транзитивная зависимость -->
+    </dependency>
 
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok-mapstruct-binding</artifactId>
-                <version>0.2.0</version>
-            </dependency>
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok-mapstruct-binding</artifactId>
+        <version>0.2.0</version>
+    </dependency>
 
-            <!-- MapStruct -->
-            <dependency>
-                <groupId>org.mapstruct</groupId>
-                <artifactId>mapstruct</artifactId>
-                <version>${mapstruct.version}</version>
-            </dependency>
+    <!-- MapStruct -->
+    <dependency>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct</artifactId>
+        <version>${mapstruct.version}</version>
+    </dependency>
 
-            <dependency>
-                <groupId>org.mapstruct</groupId>
-                <artifactId>mapstruct-processor</artifactId>
-                <version>${mapstruct.version}</version>
-            </dependency>
-        </dependencies>
+    <dependency>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct-processor</artifactId>
+        <version>${mapstruct.version}</version>
+    </dependency>
+
+    <!-- Spring Cloud Config -->
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring-cloud.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+    </dependency>
+    </dependencies>
     </dependencyManagement>
-
     <!-- ========================================== -->
     <!-- БЛОК 6: УПРАВЛЕНИЕ ПЛАГИНАМИ -->
     <!-- ========================================== -->

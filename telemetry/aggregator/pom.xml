@@ -2,43 +2,68 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- Родительский POM модуля telemetry -->
     <parent>
         <groupId>ru.yandex.practicum</groupId>
         <artifactId>telemetry</artifactId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath> <!-- Путь к родительскому POM (на уровень выше) -->
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>aggregator</artifactId>
 
+    <!-- Зависимости модуля агрегатора -->
     <dependencies>
-        <!-- Spring Boot стартер -->
+        <!-- Базовый стартер Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId> <!-- Базовый стартер Spring Boot -->
+            <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
-        <!-- Схемы данных Avro -->
+        <!-- Avro-схемы для сериализации данных в Kafka -->
         <dependency>
             <groupId>ru.yandex.practicum</groupId>
             <artifactId>avro-schemas</artifactId>
-            <version>1.0-SNAPSHOT</version> <!-- Avro-схемы для Kafka сериализации -->
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
-        <!-- Утилиты Lombok -->
+        <!-- Lombok для сокращения шаблонного кода (геттеры, сеттеры, конструкторы) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>provided</scope> <!-- Доступен только на этапе компиляции, не включается в JAR -->
+            <scope>provided</scope> <!-- Не включается в итоговый JAR -->
+        </dependency>
+
+        <!-- Spring Cloud Config Client - получение конфигурации с удаленного сервера -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+        </dependency>
+
+        <!-- Spring Retry - повторные попытки при временных сбоях (напр., подключение к Config Server) -->
+        <dependency>
+            <groupId>org.springframework.retry</groupId>
+            <artifactId>spring-retry</artifactId>
+        </dependency>
+
+        <!-- Eureka Client - регистрация и discovery сервисов -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+
+        <!-- Actuator - метрики, health checks и мониторинг приложения -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
     </dependencies>
-
+    <!-- Конфигурация сборки -->
     <build>
         <plugins>
-            <!-- Плагин Spring Boot для создания исполняемого JAR -->
+            <!-- Spring Boot Maven Plugin - создание исполняемого JAR с встроенным Tomcat -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
