@@ -67,8 +67,23 @@
             <groupId>net.devh</groupId>
             <artifactId>grpc-spring-boot-starter</artifactId> <!-- Интеграция gRPC со Spring Boot -->
         </dependency>
-    </dependencies>
 
+        <!-- Spring Cloud Config -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.retry</groupId>
+            <artifactId>spring-retry</artifactId>
+        </dependency>
+        <!-- Eureka -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <!-- Компилятор Java с обработчиками аннотаций -->
