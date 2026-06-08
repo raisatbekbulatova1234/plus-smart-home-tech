@@ -16,15 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-/**
- * Реализация сервиса для управления сценариями автоматизации.
- * Отвечает за создание, обновление и удаление сценариев на основе Kafka-событий.
- *
- * Логика работы:
- * 1. Получает ScenarioAddedEventAvro из Kafka
- * 2. Проверяет существование всех сенсоров, участвующих в сценарии
- * 3. Создаёт или обновляет сценарий с его условиями и действиями
- */
+
 @Slf4j
 @Service
 @RequiredArgsConstructor

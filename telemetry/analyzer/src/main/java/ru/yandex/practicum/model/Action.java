@@ -4,11 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import ru.yandex.practicum.kafka.telemetry.event.ActionTypeAvro;
-/**
- * Сущность "Действие" для базы данных.
- * Представляет собой действие, которое выполняется при срабатывании сценария.
- * Пример: включить свет, установить температуру 22°C
- */
+
 @Entity
 @Table(name = "actions")
 @Getter
@@ -19,7 +15,7 @@ public class Action {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private ActionTypeAvro type; //тип действия
+    private ActionTypeAvro type;
 
-    private Integer value; // значение для действия
+    private Integer value;
 }

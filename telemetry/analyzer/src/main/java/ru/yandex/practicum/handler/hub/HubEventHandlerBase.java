@@ -3,18 +3,7 @@ package ru.yandex.practicum.handler.hub;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.exception.UnsupportedPayloadTypeException;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
-/**
- * Абстрактный базовый класс для всех обработчиков событий хаба.
- *
- * Реализует паттерн "Шаблонный метод" (Template Method):
- * - handle() - общий алгоритм обработки (получение payload, валидация, логирование)
- * - process() - абстрактный метод, который реализуют конкретные обработчики
- *
- * Использует Generics для типобезопасной работы с разными типами payload.
- *
- * @param <T> - тип payload'а, который обрабатывает конкретный обработчик
- *            (DeviceAddedEventAvro, DeviceRemovedEventAvro, ScenarioAddedEventAvro и т.д.)
- */
+
 @Slf4j
 public abstract class HubEventHandlerBase<T> implements HubEventHandler {
     private final Class<T> payloadType;

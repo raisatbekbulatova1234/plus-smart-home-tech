@@ -9,12 +9,7 @@ import ru.yandex.practicum.repository.SensorRepository;
 
 import java.util.List;
 import java.util.Optional;
-/**
- * Реализация сервиса для управления датчиками (сенсорами).
- * Отвечает за регистрацию и удаление датчиков в системе.
- *
- * Источник данных: события от хаба (DeviceAddedEventProto, DeviceRemovedEventProto)
- */
+
 @Slf4j
 @Service
 @RequiredArgsConstructor

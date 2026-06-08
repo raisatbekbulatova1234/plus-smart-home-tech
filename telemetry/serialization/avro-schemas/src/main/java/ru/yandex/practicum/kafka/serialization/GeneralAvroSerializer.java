@@ -11,12 +11,7 @@ import java.io.ByteArrayOutputStream;
 
 import java.io.IOException;
 import java.util.Map;
-/**
- * Универсальный Avro сериализатор для Kafka
- *
- * Преобразует Avro объекты в байтовые массивы для отправки в Kafka
- * Работает с любыми Avro объектами (SpecificRecordBase)
- */
+
 public class GeneralAvroSerializer implements Serializer<SpecificRecordBase> {
     private final EncoderFactory encoderFactory = EncoderFactory.get();
 

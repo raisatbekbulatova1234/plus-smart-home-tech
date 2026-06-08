@@ -11,28 +11,13 @@ import ru.yandex.practicum.model.Product;
 
 import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
-/**
- * MapStruct маппер для преобразования между DTO и Entity товаров
- * componentModel = "spring" - позволяет внедрять маппер через @Autowired
- */
 @Mapper(componentModel = "spring")
 public interface ShoppingStoreMapper {
-
-    /**
-     * Преобразование DTO для создания нового товара в Entity
-     */
-    @Mapping(target = "productId", ignore = true)  // Игнорируем ID - он генерируется автоматически
+    @Mapping(target = "productId", ignore = true)
     Product toNewProduct(NewProductDto dto);
 
-    /**
-     * Частичное обновление существующего товара
-     * Обновляет только не-null поля из DTO
-     */
-    @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)  // Не обновлять null поля
+    @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
     void updateProduct(UpdatedProductDto dto, @MappingTarget Product product);
 
-    /**
-     * Преобразование Entity в DTO для отправки клиенту
-     */
     ProductDto toProductDto(Product product);
 }

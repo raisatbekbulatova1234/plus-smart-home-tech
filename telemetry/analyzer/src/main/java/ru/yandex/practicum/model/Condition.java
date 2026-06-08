@@ -6,11 +6,6 @@ import lombok.Setter;
 import ru.yandex.practicum.kafka.telemetry.event.ConditionOperationAvro;
 import ru.yandex.practicum.kafka.telemetry.event.ConditionTypeAvro;
 
-/**
- * Сущность "Условие" для базы данных.
- * Представляет собой критерий срабатывания сценария.
- * Пример: температура > 25 градусов
- */
 @Entity
 @Table(name = "conditions")
 @Getter
@@ -22,10 +17,10 @@ public class Condition {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private ConditionTypeAvro type; //тип условия
+    private ConditionTypeAvro type;
 
     @Enumerated(EnumType.STRING)
-    private ConditionOperationAvro operation; //операция
+    private ConditionOperationAvro operation;
 
-    private Integer value; //значение
+    private Integer value;
 }

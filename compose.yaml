@@ -39,8 +39,8 @@ services:
     container_name: postgres_analyzer
     environment:
       POSTGRES_DB: analyzer
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: main
+      POSTGRES_PASSWORD: main
     ports:
       - "5432:5432"
 
@@ -49,8 +49,8 @@ services:
     container_name: shopping_store_db
     environment:
       POSTGRES_DB: shopping_store
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: main
+      POSTGRES_PASSWORD: main
     ports:
       - "5433:5432"
 
@@ -59,8 +59,8 @@ services:
     container_name: shopping_cart_db
     environment:
       POSTGRES_DB: shopping_cart
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: main
+      POSTGRES_PASSWORD: main
     ports:
       - "5434:5432"
 
@@ -69,7 +69,37 @@ services:
     container_name: warehouse_db
     environment:
       POSTGRES_DB: warehouse
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: main
+      POSTGRES_PASSWORD: main
     ports:
       - "5435:5432"
+
+  order-db:
+    image: postgres:16.1
+    container_name: order_db
+    environment:
+      POSTGRES_DB: order
+      POSTGRES_USER: main
+      POSTGRES_PASSWORD: main
+    ports:
+      - "5436:5432"
+
+  payment-db:
+    image: postgres:16.1
+    container_name: payment_db
+    environment:
+      POSTGRES_DB: payment
+      POSTGRES_USER: main
+      POSTGRES_PASSWORD: main
+    ports:
+      - "5437:5432"
+
+  delivery-db:
+    image: postgres:16.1
+    container_name: delivery_db
+    environment:
+      POSTGRES_DB: delivery
+      POSTGRES_USER: main
+      POSTGRES_PASSWORD: main
+    ports:
+      - "5438:5432"

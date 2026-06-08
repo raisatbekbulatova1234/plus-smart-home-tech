@@ -9,10 +9,6 @@ import ru.yandex.practicum.enums.QuantityState;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-/**
- * Сущность товара в магазине
- * Маппится на таблицу shopping_store_products в БД
- */
 @Entity
 @Table(name = "shopping_store_products", schema = "public")
 @Getter
@@ -21,7 +17,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product {
-
     @Id
     @Column(name = "product_id")
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -34,20 +29,20 @@ public class Product {
     private String description;
 
     @Column(name = "image_src", nullable = false)
-    private String imageSrc;      // Ссылка на изображение товара
+    private String imageSrc;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "quantity_state", nullable = false)
-    private QuantityState quantityState;  // Состояние остатка товара (например, достаточное/недостаточное)
+    private QuantityState quantityState;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "product_state", nullable = false)
-    private ProductState productState;    // Состояние товара (например, активен/деактивирован)
+    private ProductState productState;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "product_category", nullable = false)
-    private ProductCategory productCategory;  // Категория товара (например, электроника, одежда)
+    private ProductCategory productCategory;
 
     @Column(name = "price", nullable = false)
-    private BigDecimal price;      // Цена товара (BigDecimal для точности работы с деньгами)
+    private BigDecimal price;
 }

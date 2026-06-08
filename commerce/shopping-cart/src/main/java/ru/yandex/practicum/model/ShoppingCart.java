@@ -6,10 +6,6 @@ import ru.yandex.practicum.enums.ShoppingCartState;
 
 import java.util.*;
 
-/**
- * Сущность корзины покупок пользователя
- * Маппится на таблицу shopping_carts в БД
- */
 @Entity
 @Table(name = "shopping_carts", schema = "public")
 @Getter
@@ -18,34 +14,26 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ShoppingCart {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "shopping_cart_id")
     private UUID shoppingCartId;
 
     @Column(name = "username", nullable = false, unique = true)
-    private String username;      // Имя пользователя (одна корзина на пользователя)
+    private String username;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)
-    private ShoppingCartState state = ShoppingCartState.ACTIVE;  // Состояние корзины (ACTIVE, CHECKOUT, CANCELLED)
+    private ShoppingCartState state = ShoppingCartState.ACTIVE;
 
-    /**
-     * Коллекция товаров в корзине
-     * Key: UUID товара (productId)
-     * Value: Long количество товара
-     *
-     * FetchType.LAZY - загружается только при обращении (оптимизация производительности)
-     */
-    @ElementCollection(fetch = FetchType.LAZY)  // Коллекция не являющаяся Entity (Value Type)
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
-            name = "shopping_cart_products",     // Имя таблицы для коллекции
-            joinColumns = @JoinColumn(name = "shopping_cart_id")  // Внешний ключ к корзине
+            name = "shopping_cart_products",
+            joinColumns = @JoinColumn(name = "shopping_cart_id")
     )
-    @MapKeyColumn(name = "product_id")           // Название колонки для ключа Map
-    @Column(name = "quantity")                  // Название колонки для значения Map
-    @Builder.Default                             // Пустая HashMap по умолчанию
+    @MapKeyColumn(name = "product_id")
+    @Column(name = "quantity")
+    @Builder.Default
     private Map<UUID, Long> products = new HashMap<>();
 }

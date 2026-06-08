@@ -4,15 +4,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.ScenarioRemovedEventAvro;
 import ru.yandex.practicum.service.ScenarioService;
-/**
- * Обработчик события "Сценарий удалён" (ScenarioRemovedEvent).
- *
- * Это событие приходит от хаба, когда пользователь удаляет сценарий.
- *
- * Логика обработки:
- * - Удаляет сценарий из системы через ScenarioService
- * - Каскадно удаляются все связанные условия и действия
- */
+
 @Component
 public class ScenarioRemovedEventHandler extends HubEventHandlerBase<ScenarioRemovedEventAvro> {
     private final ScenarioService service;

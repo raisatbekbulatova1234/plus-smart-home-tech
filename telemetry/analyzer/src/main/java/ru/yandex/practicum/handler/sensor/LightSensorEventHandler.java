@@ -4,15 +4,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.exception.UnsupportedConditionTypeException;
 import ru.yandex.practicum.kafka.telemetry.event.ConditionTypeAvro;
 import ru.yandex.practicum.kafka.telemetry.event.LightSensorAvro;
-/**
- * Обработчик событий от датчика освещённости (LightSensor).
- *
- * Датчик освещённости измеряет один параметр:
- * - Яркость/освещённость (Luminosity) - в люксах (lux)
- *
- * Поддерживаемые типы условий:
- * - LUMINOSITY - проверка уровня освещённости
-*/
+
 @Component
 public class LightSensorEventHandler extends SensorEventHandlerBase<LightSensorAvro> {
 
