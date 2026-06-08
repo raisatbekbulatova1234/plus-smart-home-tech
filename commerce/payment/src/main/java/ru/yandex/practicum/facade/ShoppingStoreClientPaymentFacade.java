@@ -11,6 +11,7 @@ import ru.yandex.practicum.dto.store.ProductDto;
 import ru.yandex.practicum.exceptions.client.*;
 import ru.yandex.practicum.exceptions.handler.ErrorCodes;
 import ru.yandex.practicum.exceptions.handler.ErrorResponse;
+import ru.yandex.practicum.exceptions.store.ProductNotFoundException;
 
 import java.util.UUID;
 
