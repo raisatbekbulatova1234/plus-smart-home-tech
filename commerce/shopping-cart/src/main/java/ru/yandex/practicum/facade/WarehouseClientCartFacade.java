@@ -11,16 +11,15 @@ import ru.yandex.practicum.dto.cart.ShoppingCartDto;
 import ru.yandex.practicum.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.exceptions.cart.CartValidationException;
 import ru.yandex.practicum.exceptions.client.ServiceValidationException;
-import ru.yandex.practicum.exceptions.client.WarehouseClientException;
+import ru.yandex.practicum.exceptions.client.WarehouseServiceUnavailableException;
 import ru.yandex.practicum.exceptions.handler.ErrorCodes;
 import ru.yandex.practicum.exceptions.handler.ErrorResponse;
 import ru.yandex.practicum.exceptions.warehouse.NoSpecifiedProductInWarehouseException;
 import ru.yandex.practicum.exceptions.warehouse.ProductInShoppingCartLowQuantityInWarehouse;
-import ru.yandex.practicum.exceptions.warehouse.WarehouseServiceUnavailableException;
 
 /**
  * Фасад для взаимодействия с сервисом склада (корзина)
- *
+ * <p>
  * Обеспечивает:
  * - Отказоустойчивость (Circuit Breaker)
  * - Обработку ошибок Feign клиента
