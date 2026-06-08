@@ -1,4 +1,4 @@
-package ru.yandex.practicum;
+package ru.yandex.practicum.error;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,6 @@ import ru.yandex.practicum.exceptions.handler.ErrorResponse;
 import ru.yandex.practicum.exceptions.order.NoOrderFoundException;
 import ru.yandex.practicum.exceptions.order.OrderStateException;
 import ru.yandex.practicum.exceptions.payment.PaymentNotFoundException;
-import ru.yandex.practicum.exceptions.store.ProductNotFoundException;
 import ru.yandex.practicum.exceptions.warehouse.NoSpecifiedProductInWarehouseException;
 import ru.yandex.practicum.exceptions.warehouse.OrderBookingAlreadyExistsException;
 
