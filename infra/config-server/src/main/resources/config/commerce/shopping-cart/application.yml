@@ -37,7 +37,7 @@ logging:
 resilience4j:
   circuitbreaker:
     instances:
-      warehouse:
+      warehouseCart:
         sliding-window-size: 10
         minimum-number-of-calls: 5
         failure-rate-threshold: 50
@@ -46,3 +46,4 @@ resilience4j:
         ignore-exceptions:
           - ru.yandex.practicum.exceptions.warehouse.NoSpecifiedProductInWarehouseException
           - ru.yandex.practicum.exceptions.warehouse.ProductInShoppingCartLowQuantityInWarehouse
+          - ru.yandex.practicum.exceptions.client.ServiceValidationException

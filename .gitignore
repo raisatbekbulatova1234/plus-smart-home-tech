@@ -1,88 +1,33 @@
-### IntelliJ IDEA ###
+# ==========================================
+# IntelliJ IDEA
+# ==========================================
 .idea/
 **/.idea/
 *.iws
 *.iml
 *.ipr
+out/
+.idea_modules/
+*.swp
+*.swo
+*~
 
-### Java ###
-# Compiled class file
+# ==========================================
+# Java / Maven (build output)
+# ==========================================
+# Compiled files
 *.class
-
-# Log file
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
 *.jar
 *.war
-*.nar
 *.ear
+*.nar
 *.zip
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
-
-### Linux ###
-*~
-
-# temporary files which can be created if a process still has a handle open of a deleted file
-.fuse_hidden*
-
-# KDE directory preferences
-.directory
-
-# Linux trash folder which might appear on any partition or disk
-.Trash-*
-
-# .nfs files are created when an open file is removed but is still being accessed
-.nfs*
-
-### macOS ###
-# General
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Icon must end with two \r
-Icon
-
-
-# Thumbnails
-._*
-
-# Files that might appear in the root of a volume
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
-
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
-
-### macOS Patch ###
-# iCloud generated files
-*.icloud
-
-### Maven ###
-!**/src/main/**/target/
-!**/src/test/**/target/
+# Maven output directories
 target/
+**/target/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -91,37 +36,192 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
-# https://github.com/takari/maven-wrapper#usage-without-binary-jar
+
+# Maven wrapper (keep the script, exclude the jar)
 .mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
 
-# Eclipse m2e generated files
-# Eclipse Core
-.project
-# JDT-specific (Eclipse Java Development Tools)
-.classpath
+# ==========================================
+# Gradle (if used)
+# ==========================================
+.gradle/
+**/gradle/
+build/
+gradle-app.setting
+!gradle-wrapper.jar
 
-### Windows ###
-# Windows thumbnail cache files
+# ==========================================
+# Logs
+# ==========================================
+*.log
+*.log.gz
+logs/
+**/logs/
+
+# ==========================================
+# Test coverage
+# ==========================================
+*.jacoco
+*.html
+*.css
+*.js
+coverage/
+.idea coverage/
+*.coverdata
+
+# ==========================================
+# Docker
+# ==========================================
+*.pid
+docker-compose.override.yml
+*.dockerignore
+
+# ==========================================
+# Application configuration (local)
+# ==========================================
+application-local.yml
+application-dev.yml
+application-*.properties
+bootstrap-local.yml
+bootstrap-dev.yml
+*.secret
+*.key
+*.pem
+*.crt
+
+# ==========================================
+# macOS
+# ==========================================
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+*.icloud
+
+# ==========================================
+# Windows
+# ==========================================
 Thumbs.db
 Thumbs.db:encryptable
 ehthumbs.db
 ehthumbs_vista.db
-
-# Dump file
 *.stackdump
-
-# Folder config file
 [Dd]esktop.ini
-
-# Recycle Bin used on file shares
 $RECYCLE.BIN/
-
-# Windows Installer files
 *.cab
 *.msi
 *.msix
 *.msm
 *.msp
-
-# Windows shortcuts
 *.lnk
+
+# ==========================================
+# Linux
+# ==========================================
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ==========================================
+# Eclipse
+# ==========================================
+.project
+.classpath
+.settings/
+bin/
+.apt_generated/
+.apt_generated_tests/
+.buildpath
+.metadata/
+
+# ==========================================
+# NetBeans
+# ==========================================
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# ==========================================
+# VS Code
+# ==========================================
+.vscode/
+*.code-workspace
+.history/
+
+# ==========================================
+# Spring Boot / Actuator
+# ==========================================
+spring-boot-devtools.properties
+spring-boot-devtools.pid
+
+# ==========================================
+# Temporary files
+# ==========================================
+*.tmp
+*.temp
+*.cache
+*.dump
+*.lock
+*.pid
+
+# ==========================================
+# Kubernetes / Helm
+# ==========================================
+*.kubeconfig
+helm/charts/*.tgz
+**/Chart.lock
+
+# ==========================================
+# Terraform
+# ==========================================
+*.tfstate
+*.tfstate.*
+.terraform/
+*.tfvars
+
+# ==========================================
+# Node / npm (if frontend)
+# ==========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ==========================================
+# Project specific
+# ==========================================
+# Custom binary files
+*.bin
+*.dat
+*.db
+*.sqlite
+
+# Actuator endpoints
+dump/
+heapdump.hprof
+*.hprof
+
+# Custom
+*.lock
+*.dump
+.console
+.history/
