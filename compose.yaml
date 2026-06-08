@@ -33,12 +33,43 @@ services:
                              --partitions 1 --replication-factor 1 --if-not-exists \
                              --bootstrap-server kafka:29092'"
     init: true
-  postgres:
-      image: postgres:16.1
-      container_name: postgres-analyzer
-      environment:
-        POSTGRES_DB: analyzer
-        POSTGRES_USER: admin
-        POSTGRES_PASSWORD: admin
-      ports:
-        - "5432:5432"
+
+  postgres-analyzer:
+    image: postgres:16.1
+    container_name: postgres_analyzer
+    environment:
+      POSTGRES_DB: analyzer
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+
+  shopping-store-db:
+    image: postgres:16.1
+    container_name: shopping_store_db
+    environment:
+      POSTGRES_DB: shopping_store
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5433:5432"
+
+  shopping-cart-db:
+    image: postgres:16.1
+    container_name: shopping_cart_db
+    environment:
+      POSTGRES_DB: shopping_cart
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5434:5432"
+
+  warehouse-db:
+    image: postgres:16.1
+    container_name: warehouse_db
+    environment:
+      POSTGRES_DB: warehouse
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5435:5432"

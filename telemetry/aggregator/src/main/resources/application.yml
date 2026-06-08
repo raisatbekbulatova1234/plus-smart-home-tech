@@ -1,18 +1,23 @@
-aggregator:
-  kafka:
-    producer:
-      properties:
-        bootstrap.servers: localhost:9092
-        key.serializer: org.apache.kafka.common.serialization.StringSerializer
-        value.serializer: ru.yandex.practicum.kafka.serialization.GeneralAvroSerializer
-      snapshot-topic: telemetry.snapshots.v1
+spring:
+  application:
+    name: aggregator
 
-    consumer:
-      properties:
-        bootstrap.servers: localhost:9092
-        key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
-        value.deserializer: ru.yandex.practicum.kafka.deserialization.SensorEventDeserializer
-        group.id: telemetry.aggregator.sensors
-      sensor-topic: telemetry.sensors.v1
-      poll-timeout: 100ms
-      batch-size: 10
+  config:
+    import: "configserver:"
+
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: config-server
+
+      fail-fast: true
+
+      retry:
+        use-random-policy: true
+        max-interval: 6000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${eureka.instance.hostname:localhost}:${eureka.instance.port:8761}/eureka/

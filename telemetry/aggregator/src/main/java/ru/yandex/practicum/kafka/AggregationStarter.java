@@ -31,6 +31,7 @@ public class AggregationStarter implements ApplicationRunner {
 
     private final Duration pollTimeout;
     private final int batchSize;
+
     private final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
 
     public AggregationStarter(
@@ -43,6 +44,7 @@ public class AggregationStarter implements ApplicationRunner {
         this.producer = producer;
         this.properties = properties;
         this.service = service;
+
         this.pollTimeout = properties.getConsumer().getPollTimeout();
         this.batchSize = properties.getConsumer().getBatchSize();
     }
@@ -60,87 +62,42 @@ public class AggregationStarter implements ApplicationRunner {
 
             while (true) {
                 ConsumerRecords<String, SensorEventAvro> records = consumer.poll(pollTimeout);
+                int processedCount = 0;
 
                 if (records.isEmpty()) {
                     continue;
                 }
 
-                // Обработка пачки с возможностью батчирования коммитов
-                processBatch(records);
-            }
-        } catch (WakeupException e) {
-            log.info("Корректное завершение consumer");
-        } catch (Exception e) {
-            log.error("Критическая ошибка", e);
-        } finally {
-            closeResources();
-        }
-    }
-
-    private void processBatch(ConsumerRecords<String, SensorEventAvro> records) {
-        int processedCount = 0;
-
-        try {
-            // Обрабатываем все записи и обновляем оффсеты
-            for (ConsumerRecord<String, SensorEventAvro> record : records) {
-                handleRecord(record, producer);
-                processedCount++;
-
-                // Обновляем оффсет для каждой записи
-                updateOffset(record);
-
-                // Коммитим каждые batchSize записей
-                if (processedCount % batchSize == 0) {
-                    commitOffsets();
-                }
-            }
-
-            // Коммитим оставшиеся оффсеты после обработки всей пачки
-            if (processedCount % batchSize != 0) {
-                commitOffsets();
-            }
-
-        } catch (Exception e) {
-            log.error("Ошибка обработки батча размером {}", records.count(), e);
-            // При ошибке не коммитим - записи обработаются при следующем poll()
-            // currentOffsets остаются на последнем успешно закоммиченном оффсете
-        }
-    }
-
-    /**
-     * Обновляет оффсет для конкретной записи
-     * Следующая запись будет с offset + 1
-     */
-    private void updateOffset(ConsumerRecord<String, SensorEventAvro> record) {
-        TopicPartition partition = new TopicPartition(record.topic(), record.partition());
-        OffsetAndMetadata newOffset = new OffsetAndMetadata(record.offset() + 1);
-        currentOffsets.put(partition, newOffset);
-    }
-
-    /**
-     * Коммитит текущие оффсеты асинхронно с fallback на синхронный
-     */
-    private void commitOffsets() {
-        if (currentOffsets.isEmpty()) {
-            return;
-        }
-
-        // Делаем копию оффсетов для коммита
-        Map<TopicPartition, OffsetAndMetadata> offsetsToCommit = new HashMap<>(currentOffsets);
-
-        consumer.commitAsync(offsetsToCommit, (offsets, exception) -> {
-            if (exception != null) {
-                log.warn("Ошибка асинхронного коммита, пробуем синхронный", exception);
                 try {
-                    consumer.commitSync(offsets);
-                    log.info("Синхронный коммит успешен");
-                } catch (Exception e) {
-                    log.error("Синхронный коммит также не удался", e);
+                    for (ConsumerRecord<String, SensorEventAvro> record : records) {
+                        handleRecord(record, producer);
+                        processedCount++;
+                        manageOffsets(record, processedCount);
+                    }
+
+                    consumer.commitAsync();
+
+                } catch (Exception ex) {
+                    log.error("Ошибка обработки Kafka batch. recordsCount={}", records.count(), ex);
                 }
-            } else {
-                log.debug("Успешно закоммичены оффсеты: {}", offsets);
             }
-        });
+
+        } catch (WakeupException ignored) {
+        } catch (Exception ex) {
+            log.error("Критическая ошибка Kafka consumer loop: topic={}",
+                    properties.getConsumer().getSensorTopic(), ex);
+        } finally {
+
+            try {
+                producer.flush();
+                consumer.commitSync(currentOffsets);
+            } finally {
+                log.info("Закрываем консьюмер");
+                consumer.close();
+                log.info("Закрываем продюсер");
+                producer.close();
+            }
+        }
     }
 
     private void handleRecord(ConsumerRecord<String, SensorEventAvro> record,
@@ -148,48 +105,23 @@ public class AggregationStarter implements ApplicationRunner {
         String topic = properties.getProducer().getSnapshotTopic();
 
         service.updateState(record.value())
-                .ifPresent(snapshot -> {
-                    ProducerRecord<String, SensorsSnapshotAvro> producerRecord =
-                            new ProducerRecord<>(topic, snapshot.getHubId(), snapshot);
-                    producer.send(producerRecord, (metadata, exception) -> {
-                        if (exception != null) {
-                            log.error("Ошибка отправки снапшота для hubId: {}",
-                                    snapshot.getHubId(), exception);
-                        } else {
-                            log.debug("Снапшот отправлен: topic={}, partition={}, offset={}",
-                                    metadata.topic(), metadata.partition(), metadata.offset());
-                        }
-                    });
-                });
+                .ifPresent(snapshot -> producer
+                        .send(new ProducerRecord<>(topic, snapshot.getHubId(), snapshot)));
     }
 
-    private void closeResources() {
-        log.info("Закрытие ресурсов Kafka");
+    private void manageOffsets(ConsumerRecord<String, SensorEventAvro> record, int processedCount) {
+        currentOffsets.put(
+                new TopicPartition(record.topic(), record.partition()),
+                new OffsetAndMetadata(record.offset() + 1)
+        );
 
-        // Закрываем producer
-        if (producer != null) {
-            try {
-                producer.flush();
-                producer.close();
-                log.info("Producer закрыт");
-            } catch (Exception e) {
-                log.error("Ошибка закрытия producer", e);
-            }
-        }
-
-        // Закрываем consumer
-        if (consumer != null) {
-            try {
-                // Финальный синхронный коммит
-                if (!currentOffsets.isEmpty()) {
-                    log.info("Финальный коммит оффсетов: {}", currentOffsets);
-                    consumer.commitSync(currentOffsets);
+        if (processedCount % batchSize == 0) {
+            consumer.commitAsync(currentOffsets, (offsets, exception) -> {
+                if (exception != null) {
+                    log.warn("Ошибка commitAsync, делаем commitSync", exception);
+                    consumer.commitSync(offsets);
                 }
-                consumer.close();
-                log.info("Consumer закрыт");
-            } catch (Exception e) {
-                log.error("Ошибка закрытия consumer", e);
-            }
+            });
         }
     }
 }

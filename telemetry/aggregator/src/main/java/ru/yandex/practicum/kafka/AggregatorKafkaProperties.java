@@ -31,3 +31,5 @@ public class AggregatorKafkaProperties {
         private int batchSize;
     }
 }
+
+

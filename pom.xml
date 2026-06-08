@@ -55,6 +55,13 @@
         <mapstruct.version>1.5.5.Final</mapstruct.version>   <!-- MapStruct маппинг -->
         <lombok.version>1.18.34</lombok.version>             <!-- Lombok -->
 
+        <!-- Spring Cloud -->
+        <spring-cloud.version>2023.0.3</spring-cloud.version> <!-- Spring Cloud Config -->
+
+        <!-- Схемы проекта -->
+        <avro-schemas.version>1.0-SNAPSHOT</avro-schemas.version>   <!-- Avro схемы -->
+        <proto-schemas.version>1.0-SNAPSHOT</proto-schemas.version> <!-- Protobuf схемы -->
+
         <!-- Плагины Maven -->
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <avro-maven-plugin.version>${avro.version}</avro-maven-plugin.version>
@@ -66,14 +73,14 @@
     <!-- ========================================== -->
     <dependencyManagement>
         <dependencies>
-            <!-- Avro -->
+            <!-- Avro сериализация -->
             <dependency>
                 <groupId>org.apache.avro</groupId>
                 <artifactId>avro</artifactId>
                 <version>${avro.version}</version>
             </dependency>
 
-            <!-- Kafka -->
+            <!-- Kafka клиент -->
             <dependency>
                 <groupId>org.apache.kafka</groupId>
                 <artifactId>kafka-clients</artifactId>
@@ -87,6 +94,22 @@
                 <version>${springdoc-openapi-starter.version}</version>
             </dependency>
 
+            <!-- ==================== СХЕМЫ ПРОЕКТА ==================== -->
+            <!-- Avro схемы для Kafka сериализации -->
+            <dependency>
+                <groupId>ru.yandex.practicum</groupId>
+                <artifactId>avro-schemas</artifactId>
+                <version>${avro-schemas.version}</version>
+            </dependency>
+
+            <!-- Protobuf схемы для gRPC -->
+            <dependency>
+                <groupId>ru.yandex.practicum</groupId>
+                <artifactId>proto-schemas</artifactId>
+                <version>${proto-schemas.version}</version>
+            </dependency>
+
+            <!-- ==================== GRPC ==================== -->
             <!-- gRPC Starter для Spring Boot -->
             <dependency>
                 <groupId>net.devh</groupId>
@@ -115,7 +138,7 @@
                 <version>${grpc.version}</version>
             </dependency>
 
-            <!-- Lombok -->
+            <!-- ==================== LOMBOK ==================== -->
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
@@ -123,13 +146,14 @@
                 <optional>true</optional> <!-- Не транзитивная зависимость -->
             </dependency>
 
+            <!-- Интеграция Lombok с MapStruct -->
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok-mapstruct-binding</artifactId>
                 <version>0.2.0</version>
             </dependency>
 
-            <!-- MapStruct -->
+            <!-- ==================== MAPSTRUCT ==================== -->
             <dependency>
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct</artifactId>
@@ -140,6 +164,16 @@
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct-processor</artifactId>
                 <version>${mapstruct.version}</version>
+            </dependency>
+
+            <!-- ==================== SPRING CLOUD ==================== -->
+            <!-- Spring Cloud BOM (Bill of Materials) -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
