@@ -4,6 +4,7 @@
 *.iws
 *.iml
 *.ipr
+out/
 
 ### Java ###
 # Compiled class file
@@ -11,6 +12,7 @@
 
 # Log file
 *.log
+*.log.gz
 
 # BlueJ files
 *.ctxt
@@ -27,23 +29,36 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# virtual machine crash logs
 hs_err_pid*
 replay_pid*
 
+### Maven ###
+# Maven output directories
+target/
+**/target/
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# Maven temporary files
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# Maven local repository (обычно не включают в git)
+# mvn-repo/
+
 ### Linux ###
 *~
-
-# temporary files which can be created if a process still has a handle open of a deleted file
 .fuse_hidden*
-
-# KDE directory preferences
 .directory
-
-# Linux trash folder which might appear on any partition or disk
 .Trash-*
-
-# .nfs files are created when an open file is removed but is still being accessed
 .nfs*
 
 ### macOS ###
@@ -51,10 +66,7 @@ replay_pid*
 .DS_Store
 .AppleDouble
 .LSOverride
-
-# Icon must end with two \r
 Icon
-
 
 # Thumbnails
 ._*
@@ -75,30 +87,8 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-### macOS Patch ###
 # iCloud generated files
 *.icloud
-
-### Maven ###
-!**/src/main/**/target/
-!**/src/test/**/target/
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
-# https://github.com/takari/maven-wrapper#usage-without-binary-jar
-.mvn/wrapper/maven-wrapper.jar
-
-# Eclipse m2e generated files
-# Eclipse Core
-.project
-# JDT-specific (Eclipse Java Development Tools)
-.classpath
 
 ### Windows ###
 # Windows thumbnail cache files
@@ -125,3 +115,57 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+### Eclipse ###
+.project
+.classpath
+.settings/
+bin/
+.apt_generated/
+.apt_generated_tests/
+.buildpath
+
+### NetBeans ###
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+### VS Code ###
+.vscode/
+*.code-workspace
+
+### Gradle ###
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+
+### Docker ###
+*.pid
+docker-compose.override.yml
+
+### Test coverage ###
+*.jacoco
+*.html
+*.css
+*.js
+coverage/
+.idea coverage/
+
+### Temporary files ###
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+### Project specific ###
+# Application logs
+logs/
+*.log
+
+# Custom
+*.lock
+*.dump
+.console
