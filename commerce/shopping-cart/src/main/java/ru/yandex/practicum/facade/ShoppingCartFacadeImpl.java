@@ -14,7 +14,7 @@ import java.util.UUID;
 
 /**
  * Реализация фасада корзины покупок
- *
+ * <p>
  * Объединяет:
  * - Бизнес-логику корзины (через ShoppingCartService)
  * - Проверку склада (через WarehouseClientFacade)
@@ -24,9 +24,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ShoppingCartFacadeImpl implements ShoppingCartFacade {
 
-    private final ShoppingCartService service;           // Сервис для работы с корзиной
-    private final WarehouseClientFacade warehouseClient; // Фасад для проверки склада
-    private final ShoppingCartMapper mapper;             // Маппер для преобразований
+    private final ShoppingCartService service;
+    private final WarehouseClientCartFacade warehouseClient;
+    private final ShoppingCartMapper mapper;
 
     /**
      * Получение корзины пользователя

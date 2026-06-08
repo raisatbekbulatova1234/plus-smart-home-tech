@@ -16,12 +16,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Глобальный обработчик ошибок для REST контроллеров
+ * Глобальный обработчик ошибок для REST контроллеров магазина (shopping-store)
  * Перехватывает исключения и возвращает клиенту структурированный JSON с ошибкой
  */
 @Slf4j
 @RestControllerAdvice           // AOP-перехват ошибок во всех контроллерах
 public class ErrorHandler {
+
+    // ==================== ОШИБКИ ВАЛИДАЦИИ ====================
 
     /**
      * Обработка ошибок валидации (@Valid)
@@ -45,7 +47,6 @@ public class ErrorHandler {
 
         logValidationError(ex, errors);           // Логируем ошибки
 
-
         return ErrorResponse.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .error(ErrorCodes.VALIDATION_FAILED)
@@ -56,6 +57,8 @@ public class ErrorHandler {
                 .validationErrors(errors)          // Список ошибок по полям
                 .build();
     }
+
+    // ==================== ОШИБКИ ТОВАРОВ ====================
 
     /**
      * Обработка ошибки "Товар не найден"
@@ -70,17 +73,19 @@ public class ErrorHandler {
             HttpServletRequest request
     ) {
 
-        log.warn("Товар не найден: {}", ex.getMessage());
+        log.warn("Товар в магазине не найден: {}", ex.getMessage());
 
         return ErrorResponse.builder()
                 .status(HttpStatus.NOT_FOUND)
-                .error(ErrorCodes.PRODUCT_NOT_FOUND)
+                .error(ErrorCodes.PRODUCT_IN_STORE_NOT_FOUND)
                 .message(ex.getMessage())
-                .userMessage(ErrorCodes.PRODUCT_NOT_FOUND.getMessage())
+                .userMessage(ErrorCodes.PRODUCT_IN_STORE_NOT_FOUND.getMessage())
                 .path(request.getRequestURI())
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+
+    // ==================== ОБЩАЯ ОШИБКА (FALLBACK) ====================
 
     /**
      * Обработка всех непредвиденных ошибок (fallback handler)
@@ -100,12 +105,14 @@ public class ErrorHandler {
         return ErrorResponse.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .error(ErrorCodes.INTERNAL_SERVER_ERROR)
-                .message(ErrorCodes.INTERNAL_SERVER_ERROR.getMessage())
-                .userMessage("На сервере произошла ошибка. Попробуйте позже.")
+                .message(ex.getClass().getName())    // Имя класса исключения
+                .userMessage(ex.getMessage())       // ВАЖНО: для теста
                 .path(request.getRequestURI())
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+
+    // ==================== ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ====================
 
     /**
      * Форматирование ошибки валидации для конкретного поля

@@ -17,16 +17,27 @@ import ru.yandex.practicum.exceptions.warehouse.SpecifiedProductAlreadyInWarehou
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Глобальный обработчик ошибок для REST контроллеров склада (warehouse)
+ * Перехватывает исключения и возвращает структурированный JSON с ошибкой
+ */
 @Slf4j
-@RestControllerAdvice
+@RestControllerAdvice           // AOP-перехват ошибок во всех контроллерах
 public class ErrorHandler {
+
+    // ==================== ОШИБКИ ВАЛИДАЦИИ ====================
+
+    /**
+     * Обработка ошибок валидации (@Valid)
+     * HTTP 400 - Bad Request
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(
             MethodArgumentNotValidException ex,
             HttpServletRequest request
     ) {
-
+        // Собираем все ошибки валидации в читаемый формат
         List<String> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -46,13 +57,18 @@ public class ErrorHandler {
                 .build();
     }
 
+    // ==================== ОШИБКИ СКЛАДА ====================
+
+    /**
+     * Товар не найден на складе
+     * HTTP 400 - Bad Request
+     */
     @ExceptionHandler(NoSpecifiedProductInWarehouseException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleNoSpecifiedProductException(
             NoSpecifiedProductInWarehouseException ex,
             HttpServletRequest request
     ) {
-
         log.warn("Товар на складе не найден: {}", ex.getMessage());
 
         return ErrorResponse.builder()
@@ -65,13 +81,16 @@ public class ErrorHandler {
                 .build();
     }
 
+    /**
+     * Недостаточно товара на складе
+     * HTTP 400 - Bad Request
+     */
     @ExceptionHandler(ProductInShoppingCartLowQuantityInWarehouse.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleProductInShoppingCartLowQuantityException(
             ProductInShoppingCartLowQuantityInWarehouse ex,
             HttpServletRequest request
     ) {
-
         log.warn("Недостаточно товара на складе: {}", ex.getMessage());
 
         return ErrorResponse.builder()
@@ -84,13 +103,17 @@ public class ErrorHandler {
                 .build();
     }
 
+    /**
+     * Товар уже зарегистрирован на складе
+     * Возникает при попытке добавить товар, который уже есть
+     * HTTP 400 - Bad Request
+     */
     @ExceptionHandler(SpecifiedProductAlreadyInWarehouseException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleSpecifiedProductAlreadyInWarehouseException(
             SpecifiedProductAlreadyInWarehouseException ex,
             HttpServletRequest request
     ) {
-
         log.warn("Товар уже зарегистрирован на складе: {}", ex.getMessage());
 
         return ErrorResponse.builder()
@@ -103,13 +126,18 @@ public class ErrorHandler {
                 .build();
     }
 
+    // ==================== ОБЩАЯ ОШИБКА (FALLBACK) ====================
+
+    /**
+     * Обработка всех непредвиденных ошибок
+     * HTTP 500 - Internal Server Error
+     */
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleInternalServerError(
             Exception ex,
             HttpServletRequest request
     ) {
-
         log.error("Внутренняя ошибка сервера", ex);
 
         return ErrorResponse.builder()
@@ -122,10 +150,18 @@ public class ErrorHandler {
                 .build();
     }
 
+    // ==================== ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ====================
+
+    /**
+     * Форматирование ошибки валидации для конкретного поля
+     */
     private String formatFieldError(FieldError error) {
         return String.format("Поле '%s': %s", error.getField(), error.getDefaultMessage());
     }
 
+    /**
+     * Логирование ошибок валидации
+     */
     private void logValidationError(MethodArgumentNotValidException ex, List<String> errors) {
         log.warn("Валидация не пройдена: {} ошибок в {} полях. Детали: {}",
                 errors.size(),

@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.exceptions.cart.NoProductsInShoppingCartException;
 import ru.yandex.practicum.exceptions.cart.NotAuthorizedUserException;
 import ru.yandex.practicum.exceptions.cart.ShoppingCartNotFoundException;
+import ru.yandex.practicum.exceptions.client.WarehouseServiceUnavailableException;
 import ru.yandex.practicum.exceptions.handler.ErrorCodes;
 import ru.yandex.practicum.exceptions.handler.ErrorResponse;
 import ru.yandex.practicum.exceptions.warehouse.NoSpecifiedProductInWarehouseException;
 import ru.yandex.practicum.exceptions.warehouse.ProductInShoppingCartLowQuantityInWarehouse;
-import ru.yandex.practicum.exceptions.warehouse.WarehouseServiceUnavailableException;
 
 import java.time.LocalDateTime;
 import java.util.List;
