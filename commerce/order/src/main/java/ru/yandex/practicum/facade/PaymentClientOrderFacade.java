@@ -15,7 +15,6 @@ import ru.yandex.practicum.exceptions.client.ServiceValidationException;
 import ru.yandex.practicum.exceptions.handler.ErrorCodes;
 import ru.yandex.practicum.exceptions.handler.ErrorResponse;
 import ru.yandex.practicum.exceptions.payment.PaymentNotFoundException;
-import ru.yandex.practicum.exceptions.store.ProductNotFoundException;
 
 import java.math.BigDecimal;
 import java.util.UUID;

@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.exceptions.handler.ErrorCodes;
 import ru.yandex.practicum.exceptions.handler.ErrorResponse;
-import ru.yandex.practicum.exceptions.store.ProductNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
