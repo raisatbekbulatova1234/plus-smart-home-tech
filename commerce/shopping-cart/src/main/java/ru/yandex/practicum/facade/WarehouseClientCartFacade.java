@@ -10,6 +10,8 @@ import ru.yandex.practicum.client.WarehouseClient;
 import ru.yandex.practicum.dto.cart.ShoppingCartDto;
 import ru.yandex.practicum.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.exceptions.cart.CartValidationException;
+import ru.yandex.practicum.exceptions.client.ServiceValidationException;
+import ru.yandex.practicum.exceptions.client.WarehouseClientException;
 import ru.yandex.practicum.exceptions.handler.ErrorCodes;
 import ru.yandex.practicum.exceptions.handler.ErrorResponse;
 import ru.yandex.practicum.exceptions.warehouse.NoSpecifiedProductInWarehouseException;
@@ -17,7 +19,7 @@ import ru.yandex.practicum.exceptions.warehouse.ProductInShoppingCartLowQuantity
 import ru.yandex.practicum.exceptions.warehouse.WarehouseServiceUnavailableException;
 
 /**
- * Фасад для взаимодействия с сервисом склада
+ * Фасад для взаимодействия с сервисом склада (корзина)
  *
  * Обеспечивает:
  * - Отказоустойчивость (Circuit Breaker)
@@ -26,30 +28,31 @@ import ru.yandex.practicum.exceptions.warehouse.WarehouseServiceUnavailableExcep
  */
 @Service
 @RequiredArgsConstructor
-public class WarehouseClientFacade {
+public class WarehouseClientCartFacade {
 
-    private final WarehouseClient warehouseClient;  // Feign клиент для склада
-    private final ObjectMapper objectMapper;        // Для парсинга ошибок
+    private final WarehouseClient warehouseClient;   // Feign клиент склада
+    private final ObjectMapper objectMapper;         // JSON маппер для парсинга ошибок
 
     /**
      * Проверка корзины через сервис склада
-     *
-     * @CircuitBreaker - защита от каскадных отказов
-     * При падении сервиса склада срабатывает fallback метод
      */
-    @CircuitBreaker(name = "warehouse", fallbackMethod = "checkShoppingCartFallback")
+    @CircuitBreaker(name = "warehouseCart", fallbackMethod = "checkShoppingCartFallback")
     public BookedProductsDto checkShoppingCart(ShoppingCartDto shoppingCart) {
         try {
             // Вызов сервиса склада через Feign
             return warehouseClient.checkShoppingCart(shoppingCart);
 
         } catch (FeignException.BadRequest e) {
-            // Обработка HTTP 400
+            // Обработка HTTP 400 - Bad Request
             try {
                 // Парсим тело ошибки из JSON
                 ErrorResponse error = objectMapper.readValue(e.contentUTF8(), ErrorResponse.class);
 
                 // Преобразуем ошибки склада в бизнес-исключения
+                if (ErrorCodes.VALIDATION_FAILED.equals(error.getError())) {
+                    throw new ServiceValidationException(error.getMessage(), error.getValidationErrors());
+                }
+
                 if (ErrorCodes.LOW_QUANTITY_IN_WAREHOUSE.equals(error.getError())) {
                     throw new ProductInShoppingCartLowQuantityInWarehouse(error.getMessage());
                 }
