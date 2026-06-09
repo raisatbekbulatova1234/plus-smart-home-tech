@@ -12,21 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Feign клиент для взаимодействия с сервисом корзины покупок (shopping-cart)
- *
- * Используется другими микросервисами (например, заказы, аналитика) для:
- * - Получения корзины пользователя
- * - Добавления/удаления товаров
- * - Изменения количества товаров
- * - Деактивации корзины
- *
- * name = "shopping-cart" - имя сервиса в Eureka (Service Discovery)
- * path = "/api/v1/shopping-cart" - базовый путь для всех запросов к сервису
- */
 @FeignClient(name = "shopping-cart", path = "/api/v1/shopping-cart")
 public interface ShoppingCartClient {
-
 
     @GetMapping
     ShoppingCartDto getShoppingCart(@RequestParam String username);

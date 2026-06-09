@@ -3,9 +3,7 @@ package ru.yandex.practicum.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-/**
- * Сущность "Датчик" для базы данных.
- */
+
 @Entity
 @Table(name = "sensors")
 @Getter

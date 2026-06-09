@@ -15,10 +15,13 @@ spring:
           search-locations:
             - classpath:config/telemetry/{application}
             - classpath:config/commerce/{application}
+            - classpath:config/infra/{application}
 
 eureka:
-  instance:
-    prefer-ip-address: true
   client:
-    service-url:
+    serviceUrl:
       defaultZone: http://${eureka.instance.hostname:localhost}:${eureka.instance.port:8761}/eureka/
+
+  instance:
+    preferIpAddress: true
+    instance-id: "${spring.application.name}:${random.value}"

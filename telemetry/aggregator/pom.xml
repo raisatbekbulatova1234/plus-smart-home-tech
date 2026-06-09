@@ -2,67 +2,59 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>ru.yandex.practicum</groupId>
         <artifactId>telemetry</artifactId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath> <!-- Путь к родительскому POM (на уровень выше) -->
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>aggregator</artifactId>
 
     <dependencies>
-        <!-- Spring Boot стартер -->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId> <!-- Базовый стартер Spring Boot -->
+            <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
-        <!-- Схемы данных Avro -->
         <dependency>
             <groupId>ru.yandex.practicum</groupId>
             <artifactId>avro-schemas</artifactId>
-            <version>1.0-SNAPSHOT</version> <!-- Avro-схемы для Kafka сериализации -->
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
-        <!-- Утилиты Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>provided</scope> <!-- Доступен только на этапе компиляции, не включается в JAR -->
+            <scope>provided</scope>
         </dependency>
 
-        <!-- Spring Cloud Config клиент -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
         </dependency>
 
-        <!-- Spring Retry для повторных попыток подключения к Config Server -->
         <dependency>
             <groupId>org.springframework.retry</groupId>
             <artifactId>spring-retry</artifactId>
         </dependency>
 
-        <!-- Eureka Client для service discovery -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
 
-        <!-- Actuator для мониторинга и health checks -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+
     </dependencies>
 
     <build>
         <plugins>
-            <!-- Плагин Spring Boot для создания исполняемого JAR -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

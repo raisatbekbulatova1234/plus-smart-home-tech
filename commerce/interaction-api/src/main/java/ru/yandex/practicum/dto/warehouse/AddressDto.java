@@ -19,6 +19,5 @@ public class AddressDto {
     @NotBlank
     String house;
 
-    @NotBlank
     String flat;
 }

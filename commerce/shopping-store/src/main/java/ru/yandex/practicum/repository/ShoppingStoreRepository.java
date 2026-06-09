@@ -8,13 +8,6 @@ import ru.yandex.practicum.model.Product;
 
 import java.util.UUID;
 
-/**
- * Репозиторий для работы с сущностью Product (товары магазина)
- */
 public interface ShoppingStoreRepository extends JpaRepository<Product, UUID> {
-
-    /**
-     * Поиск товаров по категории с пагинацией
-     */
     Page<Product> findByProductCategory(ProductCategory category, Pageable pageable);
 }

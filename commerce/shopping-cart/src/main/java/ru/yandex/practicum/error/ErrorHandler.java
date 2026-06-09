@@ -11,36 +11,26 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.exceptions.cart.NoProductsInShoppingCartException;
 import ru.yandex.practicum.exceptions.cart.NotAuthorizedUserException;
 import ru.yandex.practicum.exceptions.cart.ShoppingCartNotFoundException;
+import ru.yandex.practicum.exceptions.client.ServiceValidationException;
 import ru.yandex.practicum.exceptions.handler.ErrorCodes;
 import ru.yandex.practicum.exceptions.handler.ErrorResponse;
 import ru.yandex.practicum.exceptions.warehouse.NoSpecifiedProductInWarehouseException;
 import ru.yandex.practicum.exceptions.warehouse.ProductInShoppingCartLowQuantityInWarehouse;
-import ru.yandex.practicum.exceptions.warehouse.WarehouseServiceUnavailableException;
+import ru.yandex.practicum.exceptions.client.WarehouseServiceUnavailableException;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Глобальный обработчик ошибок для REST контроллеров корзины покупок
- * Перехватывает исключения и возвращает структурированный JSON с ошибкой
- */
 @Slf4j
-@RestControllerAdvice           // AOP-перехват ошибок во всех контроллерах
+@RestControllerAdvice
 public class ErrorHandler {
-
-    // ==================== ОШИБКИ ВАЛИДАЦИИ ====================
-
-    /**
-     * Обработка ошибок валидации (@Valid)
-     * HTTP 400 - Bad Request
-     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(
             MethodArgumentNotValidException ex,
             HttpServletRequest request
     ) {
-        // Собираем все ошибки валидации в читаемый формат
+
         List<String> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -60,18 +50,34 @@ public class ErrorHandler {
                 .build();
     }
 
-    // ==================== ОШИБКИ АВТОРИЗАЦИИ ====================
+    @ExceptionHandler(ServiceValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleServiceValidationException(
+            ServiceValidationException ex,
+            HttpServletRequest request
+    ) {
 
-    /**
-     * Обработка ошибки "Неавторизованный пользователь"
-     * HTTP 401 - Unauthorized
-     */
+        log.warn("Ошибки валидации при обращении к внешнему сервису: {}, {}", ex.getMessage(),
+                ex.getErrors());
+
+        return ErrorResponse.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .error(ErrorCodes.VALIDATION_FAILED)
+                .message(ex.getMessage())
+                .userMessage(ErrorCodes.VALIDATION_FAILED.getMessage())
+                .path(request.getRequestURI())
+                .timestamp(LocalDateTime.now())
+                .validationErrors(ex.getErrors())
+                .build();
+    }
+
     @ExceptionHandler(NotAuthorizedUserException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handleNotAuthorizedUserException(
             NotAuthorizedUserException ex,
             HttpServletRequest request
     ) {
+
         log.warn("Имя пользователя не прошло проверку: {}", ex.getMessage());
 
         return ErrorResponse.builder()
@@ -84,18 +90,13 @@ public class ErrorHandler {
                 .build();
     }
 
-    // ==================== ОШИБКИ КОРЗИНЫ ====================
-
-    /**
-     * Обработка ошибки "В корзине нет товаров"
-     * HTTP 400 - Bad Request
-     */
     @ExceptionHandler(NoProductsInShoppingCartException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleNoProductsInShoppingCartException(
             NoProductsInShoppingCartException ex,
             HttpServletRequest request
     ) {
+
         log.warn("Товары в корзине пользователя не найдены: {}", ex.getMessage());
 
         return ErrorResponse.builder()
@@ -108,16 +109,13 @@ public class ErrorHandler {
                 .build();
     }
 
-    /**
-     * Обработка ошибки "Корзина не найдена"
-     * HTTP 404 - Not Found
-     */
     @ExceptionHandler(ShoppingCartNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleShoppingCartNotFoundException(
             ShoppingCartNotFoundException ex,
             HttpServletRequest request
     ) {
+
         log.warn("Корзина пользователя не найдена: {}", ex.getMessage());
 
         return ErrorResponse.builder()
@@ -130,18 +128,13 @@ public class ErrorHandler {
                 .build();
     }
 
-    // ==================== ОШИБКИ СКЛАДА ====================
-
-    /**
-     * Обработка ошибки "Товар не найден на складе"
-     * HTTP 400 - Bad Request
-     */
     @ExceptionHandler(NoSpecifiedProductInWarehouseException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleNoSpecifiedProductException(
             NoSpecifiedProductInWarehouseException ex,
             HttpServletRequest request
     ) {
+
         log.warn("Товар на складе не найден: {}", ex.getMessage());
 
         return ErrorResponse.builder()
@@ -154,16 +147,13 @@ public class ErrorHandler {
                 .build();
     }
 
-    /**
-     * Обработка ошибки "Недостаточно товара на складе"
-     * HTTP 400 - Bad Request
-     */
     @ExceptionHandler(ProductInShoppingCartLowQuantityInWarehouse.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleProductInShoppingCartLowQuantityException(
             ProductInShoppingCartLowQuantityInWarehouse ex,
             HttpServletRequest request
     ) {
+
         log.warn("Недостаточно товара на складе: {}", ex.getMessage());
 
         return ErrorResponse.builder()
@@ -176,16 +166,13 @@ public class ErrorHandler {
                 .build();
     }
 
-    /**
-     * Обработка ошибки "Сервис склада недоступен"
-     * HTTP 503 - Service Unavailable
-     */
     @ExceptionHandler(WarehouseServiceUnavailableException.class)
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public ErrorResponse handleWarehouseServiceUnavailableException(
             WarehouseServiceUnavailableException ex,
             HttpServletRequest request
     ) {
+
         log.warn("Сервис склада недоступен: {}", ex.getMessage());
 
         return ErrorResponse.builder()
@@ -198,42 +185,29 @@ public class ErrorHandler {
                 .build();
     }
 
-    // ==================== ОБЩАЯ ОШИБКА (FALLBACK) ====================
-
-    /**
-     * Обработка всех непредвиденных ошибок
-     * HTTP 500 - Internal Server Error
-     */
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleInternalServerError(
             Exception ex,
             HttpServletRequest request
     ) {
+
         log.error("Внутренняя ошибка сервера", ex);
 
         return ErrorResponse.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .error(ErrorCodes.INTERNAL_SERVER_ERROR)
-                .message(ErrorCodes.INTERNAL_SERVER_ERROR.getMessage())
-                .userMessage("На сервере произошла ошибка. Попробуйте позже.")
+                .message(ex.getClass().getName())
+                .userMessage(ex.getMessage()) // ВАЖНО: для теста
                 .path(request.getRequestURI())
                 .timestamp(LocalDateTime.now())
                 .build();
     }
 
-    // ==================== ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ====================
-
-    /**
-     * Форматирование ошибки валидации для конкретного поля
-     */
     private String formatFieldError(FieldError error) {
         return String.format("Поле '%s': %s", error.getField(), error.getDefaultMessage());
     }
 
-    /**
-     * Логирование ошибок валидации
-     */
     private void logValidationError(MethodArgumentNotValidException ex, List<String> errors) {
         log.warn("Валидация не пройдена: {} ошибок в {} полях. Детали: {}",
                 errors.size(),

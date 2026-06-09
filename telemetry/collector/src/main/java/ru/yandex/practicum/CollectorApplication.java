@@ -5,7 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import ru.yandex.practicum.kafka.KafkaProducerConfiguration;
 
-
 @SpringBootApplication
 @EnableConfigurationProperties(KafkaProducerConfiguration.class)
 public class CollectorApplication {

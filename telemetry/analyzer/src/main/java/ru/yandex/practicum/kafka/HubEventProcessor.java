@@ -16,17 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-/**
- * Процессор для чтения и обработки Kafka-сообщений с событиями от хабов.
- *
- * Реализует Runnable, может быть запущен в отдельном потоке.
- *
- * Обрабатывает события:
- * - DeviceAddedEvent (добавление устройства)
- * - DeviceRemovedEvent (удаление устройства)
- * - ScenarioAddedEvent (добавление/обновление сценария)
- * - ScenarioRemovedEvent (удаление сценария)
- */
+
 @Slf4j
 @Component
 public class HubEventProcessor implements Runnable {
@@ -36,7 +26,7 @@ public class HubEventProcessor implements Runnable {
     private final Duration pollTimeout;
 
     public HubEventProcessor(
-            @Qualifier("hubEventConsumer")// Указываем конкретный бин консьюмера
+            @Qualifier("hubEventConsumer")
             KafkaConsumer<String, HubEventAvro> consumer,
             AnalyzerKafkaProperties properties,
             List<HubEventHandler> handlers
@@ -58,11 +48,7 @@ public class HubEventProcessor implements Runnable {
     }
 
     private void start() {
-        // Добавляем хук для корректного завершения
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            log.info("Получен сигнал завершения");
-            consumer.wakeup();
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
 
         try {
             consumer.subscribe(List.of(properties.getHubEventConfiguration().getTopic()));
@@ -70,80 +56,49 @@ public class HubEventProcessor implements Runnable {
             while (true) {
                 ConsumerRecords<String, HubEventAvro> records = consumer.poll(pollTimeout);
 
-                if (!records.isEmpty()) {
-                    processBatch(records);
+                if (records.isEmpty()) {
+                    continue;
+                }
+
+                try {
+                    for (ConsumerRecord<String, HubEventAvro> record : records) {
+                        processRecord(record);
+                    }
+
+                    consumer.commitSync();
+
+                } catch (Exception ex) {
+                    log.error("Ошибка обработки Kafka batch. recordsCount={}", records.count(), ex);
                 }
             }
 
-        } catch (WakeupException e) {
-            log.info("Consumer остановлен корректно");
-        } catch (Exception e) {
-            log.error("Критическая ошибка в consumer loop", e);
+        } catch (WakeupException ignored) {
+        } catch (Exception ex) {
+            log.error("Критическая ошибка Kafka consumer loop: topic={}",
+                    properties.getHubEventConfiguration().getTopic(), ex);
         } finally {
-            closeConsumer();
+
+            try {
+                consumer.commitSync();
+            } finally {
+                log.info("Закрываем консьюмер");
+                consumer.close();
+            }
         }
     }
 
-    private void processBatch(ConsumerRecords<String, HubEventAvro> records) {
-        try {
-            // Обрабатываем все записи
-            for (ConsumerRecord<String, HubEventAvro> record : records) {
-                processRecord(record);
+    private void processRecord(ConsumerRecord<String, HubEventAvro> record) {
+            HubEventAvro event = record.value();
+
+            Object payload = event.getPayload();
+            HubEventHandler handler = hubEventHandlers.get(payload.getClass());
+
+            if (handler == null) {
+                log.warn("Нет handler для payload: {}", payload.getClass());
+                throw new HandlerNotFoundException(String.format("Нет handler для payload: %s",
+                        payload.getClass().getSimpleName()));
             }
 
-            // Асинхронный коммит (быстрее)
-            consumer.commitAsync((offsets, exception) -> {
-                if (exception != null) {
-                    log.error("Ошибка асинхронного коммита offset", exception);
-                }
-            });
-
-        } catch (Exception e) {
-            log.error("Ошибка обработки батча размером {}", records.count(), e);
-            // При ошибке не коммитим - записи обработаются при следующем poll
-        }
-    }
-
-    private void closeConsumer() {
-        log.info("Закрываем consumer");
-
-        // Финальный синхронный коммит
-        try {
-            consumer.commitSync();
-        } catch (Exception e) {
-            log.error("Ошибка при финальном коммите", e);
-        }
-
-        // Закрываем consumer
-        try {
-            consumer.close();
-        } catch (Exception e) {
-            log.error("Ошибка при закрытии consumer", e);
-        }
-    }
-    /**
-     * Обрабатывает одно сообщение из Kafka.
-     *
-     * @param record - запись из Kafka (ключ + значение)
-     *
-     * Логика:
-     * 1. Извлекает payload из события
-     * 2. Находит обработчик по типу payload
-     * 3. Если обработчик не найден - выбрасывает исключение
-     * 4. Вызывает обработчик
-     */
-    private void processRecord(ConsumerRecord<String, HubEventAvro> record) {
-        HubEventAvro event = record.value();
-
-        Object payload = event.getPayload();
-        HubEventHandler handler = hubEventHandlers.get(payload.getClass());
-
-        if (handler == null) {
-            log.warn("Нет handler для payload: {}", payload.getClass());
-            throw new HandlerNotFoundException(String.format("Нет handler для payload: %s",
-                    payload.getClass().getSimpleName()));
-        }
-        // Делегируем обработку найденному обработчику
-        handler.handle(event);
+            handler.handle(event);
     }
 }

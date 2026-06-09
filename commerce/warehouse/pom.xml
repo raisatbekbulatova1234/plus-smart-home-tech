@@ -3,8 +3,6 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <!-- Родительский модуль commerce -->
     <parent>
         <groupId>ru.yandex.practicum</groupId>
         <artifactId>commerce</artifactId>
@@ -12,113 +10,93 @@
     </parent>
 
     <artifactId>warehouse</artifactId>
-    <description>Сервис склада: управление остатками, бронирование, проверка наличия</description>
 
-    <!-- Зависимости -->
     <dependencies>
-        <!-- Общее API для взаимодействия между сервисами (Feign клиенты, DTO) -->
         <dependency>
             <groupId>ru.yandex.practicum</groupId>
             <artifactId>interaction-api</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
-        <!-- Spring Web - REST контроллеры -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Валидация входных данных (@Valid, @NotNull) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-        <!-- Actuator - метрики, health checks, мониторинг -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-        <!-- JPA - работа с PostgreSQL -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- PostgreSQL драйвер -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Lombok - генерация геттеров/сеттеров -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
 
-        <!-- MapStruct - маппинг DTO ↔ Entity -->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
         </dependency>
 
-        <!-- Интеграция Lombok с MapStruct -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok-mapstruct-binding</artifactId>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Spring Cloud Config Client - внешняя конфигурация -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
         </dependency>
 
-        <!-- Spring Retry - повторные попытки при сбоях -->
         <dependency>
             <groupId>org.springframework.retry</groupId>
             <artifactId>spring-retry</artifactId>
         </dependency>
 
-        <!-- Eureka Client - регистрация в discovery сервере -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
 
-        <!-- OpenFeign - HTTP клиент для вызова других сервисов -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
     </dependencies>
 
-    <!-- Сборка -->
     <build>
         <plugins>
-            <!-- Компилятор с поддержкой MapStruct + Lombok -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <annotationProcessorPaths>
-                        <!-- Генерация мапперов -->
                         <path>
                             <groupId>org.mapstruct</groupId>
                             <artifactId>mapstruct-processor</artifactId>
                         </path>
-                        <!-- Генерация геттеров/сеттеров -->
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                         </path>
-                        <!-- Совместная работа Lombok и MapStruct -->
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok-mapstruct-binding</artifactId>
@@ -126,8 +104,6 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
-
-            <!-- Создание исполняемого JAR -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

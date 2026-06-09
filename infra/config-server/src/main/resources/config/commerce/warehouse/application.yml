@@ -7,8 +7,8 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:5435/warehouse
-    username: admin
-    password: admin
+    username: main
+    password: main
     driver-class-name: org.postgresql.Driver
 
   jpa:
